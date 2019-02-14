@@ -1,0 +1,231 @@
+<html>
+<body>
+<h1>测试</h1>
+<script>
+    {
+        var tmp = '123';
+        if (true) {
+            tmp = "可以赋值";
+            console.log(tmp);
+        }
+        console.log(tmp)
+
+        if (true) {
+            // TDZ开始
+            let tmp; // TDZ结束
+            console.log(tmp); // undefined
+            tmp = 123;
+            console.log(tmp); // 123
+        }
+
+        {
+            function f() {
+                let n = 5;
+                if (true) {
+                    let n = 10
+
+                    function f() {
+                        let n = 11
+                        console.log(n)
+                    }
+
+                    console.log(n)
+                    f()
+                }
+                console.log(n)
+            }
+
+            f()
+        }
+
+        {
+            // let x = do {
+            // }
+            console.log("")
+            if (true) {
+                const MAX = 5;
+                console.log("MAX: " + MAX)
+            }
+            // Uncaught ReferenceError: MAX is not defined
+            // console.log("MAX: " + MAX)
+            const foo = {}
+            foo.id = 10086
+            foo.name = '10068'
+            console.log(foo)
+
+            const a = []
+            a.push("Hello")
+            console.log(a)
+
+            // 冻结
+            // const boo = Object.freeze({});
+            const boo = {}
+            boo.id = "id_boo"
+            Object.freeze(boo)
+            boo.id = "id" // 无效
+            console.log(boo)
+
+            // 除了将一个对象本身冻结，对象的属性也冻结的函数
+            var constantize = (obj) => {
+                Object.freeze(obj)
+                Object.keys(obj).forEach((key, i) => {
+                    if (typeof obj[key] === 'object') {
+                        constantize(obj[key])
+                    }
+                })
+            }
+        }
+        {
+            let [foo] = [undefined]
+            console.log(foo)
+
+            {
+                let [x, y, z] = new Set(['a'])
+                console.log(x)
+            }
+
+            let {foo: baz} = {foo: 'aaa', bar: 'bbb'}
+            console.log(baz)
+
+            let {p, p: [x, {y}]} = {
+                p: ['hello', {y: 'world'}]
+            }
+            console.log(p) // ['hello', {y: 'world'}]
+            console.log(x) // hello
+            console.log(y) // world
+
+            // loc 和 start 都是模式，不是变量
+            let {loc, loc: {start}, loc: {start: {line}}} = {
+                loc: {
+                    start: {
+                        line: 1,
+                        column: 5
+                    }
+                }
+            }
+            console.log(loc) // { start: { line: 1, column: 5 } }
+            console.log(start) // { line: 1, column: 5 }
+            console.log(line) // 1
+
+            {
+                let x;
+                ({x} = {x: 1});
+                // 表达式虽然毫无意义，但是语法是合法的
+                ({} = [true, false])
+                // ({} = 'abc')
+                // ({} = [])
+            }
+
+            let {toString: s} = 123;
+            console.log("s: " + (s === Number.prototype.toString))
+
+            let {toString: z} = true
+            console.log("z: " + (z === Boolean.prototype.toString))
+            {
+                [[1, 2], [3, 4]].map(([a, b]) => {
+                    console.log(a + b)
+                })
+            }
+
+            let map = new Map();
+            map.set('1', 'first');
+            map.set('2', 'second');
+            map.set('3', 'third');
+            for (let [k, v] of map) {
+                console.log('key: ' + k + ', value: ' + v)
+            }
+            for (let [k] of map) {
+                console.log('key: ' + k)
+            }
+            for (let [, v] of map) {
+                console.log('value: ' + v)
+            }
+            console.log('\u{20BB7}')
+            console.log('\u{41}\u{42}\u{43}')
+            console.log('\u{6F}')
+        }
+        // 字符
+        {
+            let s = "\u{20BB7}";
+            console.log(s)
+            console.log(s.codePointAt(0).toString(16))
+            console.log(s.codePointAt(1).toString(16))
+            console.log(">>>>><<<<<")
+            let x = "\uD842\uDFB7";
+            console.log(s === x)
+
+            let temp = 'a𠮷';
+            for (let c of temp) {
+                console.log(c.codePointAt(0).toString(16))
+            }
+
+            let t = '𠮷';
+            let z = 'a𠮷';
+
+            function is32Bit(c = '') {
+                return c.codePointAt(0) > 0xFFFF
+            }
+
+            function contain32Bit(c = "") {
+                let flag = false;
+                for (let t of c) {
+                    if (is32Bit(t)) {
+                        flag = true;
+                    }
+                }
+                return flag;
+            }
+
+            console.log(is32Bit(t))
+            console.log(contain32Bit(z))
+            console.log(String.fromCodePoint(0x20BB7))
+            // 字符串遍历器
+            // 除了便利字符串，这个遍历器最大的优点是可以识别大于0xFFFF的码点
+            {
+                for (let c of 'fox') {
+                    console.log(c)
+                }
+
+                var text = String.fromCodePoint(0x20BB7);
+                for (let i = 0; i < text.length; i++) {
+                    console.log(text[i].codePointAt(0).toString(16));
+                }
+                for (let i of text) {
+                    console.log(i);
+                }
+            }
+            {
+                console.log('hello'.repeat(2))
+            }
+            {
+                function hw() {
+                    return "Hello world"
+                }
+
+                console.log(`foo ${hw()} bar`)
+
+                let str = 'return' + '`Hello ${name}`'
+                let func = new Function('name', str)
+                console.log(func('Jack'))
+
+                // 嵌套
+                {
+                    const tmpl = data => `
+                                    <table>
+                                        ${data.map(addr => `
+                                            <tr><td>${addr.first}</td></tr>
+                                            <tr><td>${addr.last}</td></tr>
+                                        `).join('')}
+                                    </table>`;
+                    const data = [
+                        {first: '<Jane>', last: 'Bond'},
+                        {first: 'Lars', last: '<Croft>'},
+                    ];
+                    console.log(tmpl(data));
+                }
+            }
+        }
+    }
+</script>
+</body>
+</html>
