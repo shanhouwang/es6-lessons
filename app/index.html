@@ -223,6 +223,127 @@
                     ];
                     console.log(tmpl(data));
                 }
+
+                // 字符串补全
+                {
+                    let x = 'x'.padStart(5, 'abc')
+                    console.log(x)
+                }
+                {
+                    let x = 1;
+                    let y = 2;
+                    `${x} + ${y} = ${x + y}`
+                    let o = {x: 1, y: 2}
+                    console.log(`x + y = ${o.x + o.y}`)
+                }
+                {
+                    let template = `
+                        <ul>
+                            <% for(var i = 0 ;i< data.supplies.length;i++){ %>
+                                <li><%= data.supplies[i] %></li>
+                            <%}%>
+                        </ul>
+                    `
+                }
+                // 函数扩展
+                {
+                    let f = v => v;
+
+                    // 等价于
+                    function p(v) {
+                        return v
+                    }
+
+                    let handler = {
+                        id: '10086',
+                        init: function () {
+                            // this.doSomething 会报错，this 代表 document
+                            document.addEventListener('click', evt => this.doSomething(evt.type), false);
+                        },
+                        doSomething: function (type) {
+                            console.log(`${type}${this.id}`)
+                        }
+                    }
+
+                    const promise = new Promise(function (resolve, reject) {
+                        if (true/*异步环境成功了*/) {
+                            resolve(true)
+                        } else {
+                            reject(error)
+                        }
+                    })
+
+                    // then
+                    promise.then(function () {
+
+                    }).catch(function (err) {
+                        // error
+                    })
+
+                    class Point {
+                        constructor(x, y) {
+                            this.x = x;
+                            this.y = y;
+                        }
+                    }
+
+                    class ColorPoint extends Point {
+                        constructor() {
+                            super()
+                        }
+                    }
+
+                    let classPoint = new Point('xyz', false)
+                    console.log(classPoint.x)
+
+                    let cp = new ColorPoint();
+
+                    class A {
+                        constructor() {
+                            // new.target 指向当前正在执行的函数
+                            console.log(new.target.name)
+                        }
+                    }
+
+                    class B extends A {
+                        constructor() {
+                            super()
+                        }
+                    }
+
+                    new A()
+                    new B()
+
+                    // super 作为对象，super 指向父类的原型对象，所以定义在父类实例上的方法或属性，是无法通过super调用的
+                    // super 调用父类的方法时，super会绑定子类的this
+                    {
+                        class A {
+                            constructor() {
+                                this.x = '1'
+                            }
+
+                            p() {
+                                console.log(this.x)
+                            }
+                        }
+
+                        // A.prototype.p = '1234567890'
+                        class B extends A {
+                            constructor() {
+                                super()
+                                this.x = 2
+                            }
+
+                            m() {
+                                // super 在普通方法之中，指向A.prototype，所以super.p()就相当于A.prototype.p()
+                                super.p()
+                            }
+                        }
+
+                        let b = new B();
+                        b.m()
+                    }
+                }
             }
         }
     }
