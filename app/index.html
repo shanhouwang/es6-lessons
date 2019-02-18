@@ -281,11 +281,11 @@
                     })
 
                     class Point {
-                        constructor(x, y) {
-                            this.x = x;
-                            this.y = y;
-                        }
                     }
+
+                    // console.log(typeof Point()) // function
+                    console.log(Point.__proto__)
+                    console.log(Point === Point.prototype.constructor) // true
 
                     class ColorPoint extends Point {
                         constructor() {
@@ -322,6 +322,8 @@
                                 this.x = '1'
                             }
 
+                            // 类的所有方法都定义在类的 prototype 属性上面
+                            // 在类的实例上面调用方法，其实就是调用原型上的方法
                             p() {
                                 console.log(this.x)
                             }
@@ -331,7 +333,7 @@
                         class B extends A {
                             constructor() {
                                 super()
-                                this.x = 2
+                                this.x = '2'
                             }
 
                             m() {
@@ -341,7 +343,23 @@
                         }
 
                         let b = new B();
+                        let c = new B();
                         b.m()
+                        // Object.prototype 是所有对象的爸爸
+                        console.log(b === c) // false
+                        console.log(b.constructor === B.prototype.constructor) // true
+                        console.log(b.constructor === c.constructor) // true
+                        console.log(Object.prototype)
+                        console.log(A.prototype.__proto__ === Object.prototype) // true
+                        // 子类的__proto__属性，表示构造函数的继承，总是指向父类
+                        console.log(B.__proto__ === A) // true
+                        console.log(B.__proto__ === A.prototype.constructor) // true
+                        console.log(B.prototype.constructor.__proto__ === A.prototype.constructor) // true
+                        console.log(B === B.prototype.constructor) // true
+                        // 子类的prototype属性的__proto__，表示方法的继承，总是指向父类的prototype属性
+                        console.log(B.prototype.__proto__ === A.prototype) // true
+                        console.log(Object.getPrototypeOf(B) === A) // true
+
                     }
                 }
             }
